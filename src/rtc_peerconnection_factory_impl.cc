@@ -26,6 +26,9 @@
 #endif
 #include <api/task_queue/default_task_queue_factory.h>
 
+#include <cstdlib>
+#include <string>
+
 namespace libwebrtc {
 
 #if defined(USE_INTEL_MEDIA_SDK)
@@ -43,6 +46,22 @@ std::unique_ptr<webrtc::VideoDecoderFactory> CreateIntelVideoDecoderFactory() {
   return std::make_unique<owt::base::MSDKVideoDecoderFactory>();
 }
 #endif
+
+webrtc::AudioDeviceModule::AudioLayer AudioLayerFromEnvironment() {
+  const char* value = std::getenv("LIBWEBRTC_AUDIO_DEVICE");
+  if (!value || !*value) {
+    value = std::getenv("MCLOUD_WEBRTC_AUDIO_DEVICE");
+  }
+  if (value) {
+    std::string text(value);
+    std::transform(text.begin(), text.end(), text.begin(),
+                   [](unsigned char ch) { return static_cast<char>(std::tolower(ch)); });
+    if (text == "platform" || text == "default") {
+      return webrtc::AudioDeviceModule::kPlatformDefaultAudio;
+    }
+  }
+  return webrtc::AudioDeviceModule::kDummyAudio;
+}
 
 RTCPeerConnectionFactoryImpl::RTCPeerConnectionFactoryImpl():
 env_(webrtc::EnvironmentFactory().Create()) {}
@@ -122,7 +141,7 @@ void RTCPeerConnectionFactoryImpl::CreateAudioDeviceModule_w() {
   if (!audio_device_module_)
     audio_device_module_ = webrtc::CreateAudioDeviceModule(
         env_,
-        webrtc::AudioDeviceModule::kDummyAudio,
+        AudioLayerFromEnvironment(),
         false);
 }
 
