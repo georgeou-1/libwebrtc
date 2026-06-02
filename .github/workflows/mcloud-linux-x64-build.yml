@@ -1,0 +1,62 @@
+name: mCloud Linux x64 libwebrtc build
+
+on:
+  push:
+    branches:
+      - mcloud-encoded-frame-receiver
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  build-linux-x64:
+    name: Build patched libwebrtc.so for Linux x64 release
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          submodules: true
+
+      - name: Install dependencies
+        run: |
+          pip3 install setuptools
+          sudo apt update -y
+          sudo apt install -y ninja-build pkg-config openjdk-11-jdk zip
+
+      - name: Free disk space
+        uses: jlumbroso/free-disk-space@54081f138730dfa15788a46383842cd2f914a1be
+        with:
+          android: false
+          tool-cache: true
+          dotnet: true
+          haskell: true
+          large-packages: true
+          docker-images: true
+          swap-storage: true
+
+      - name: Target Linux
+        run: echo -e "\ntarget_os = [\"linux\"]" >> .gclient
+        shell: bash
+        working-directory: build
+
+      - name: Build Linux x64 release
+        run: chmod +x ./libwebrtc_linux_build.sh && ./libwebrtc_linux_build.sh --arch x64 --profile release --commit ""
+        working-directory: build
+
+      - name: Zip artifact
+        run: |
+          cd build
+          zip "${{ github.workspace }}/libwebrtc-linux-x64-release.zip" linux-x64-release -r
+
+      - name: Generate sha256
+        run: sha256sum libwebrtc-linux-x64-release.zip > libwebrtc-linux-x64-release.zip.sha256
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: libwebrtc-linux-x64-release
+          path: |
+            libwebrtc-linux-x64-release.zip
+            libwebrtc-linux-x64-release.zip.sha256
