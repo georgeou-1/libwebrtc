@@ -12,6 +12,7 @@
 #include "rtc_media_stream_impl.h"
 #include "rtc_mediaconstraints_impl.h"
 #include "rtc_encoded_video_frame_decoder.h"
+#include "rtc_encoded_video_frame_encoder.h"
 #include "rtc_peerconnection_impl.h"
 #include "rtc_rtp_capabilities_impl.h"
 #include "rtc_video_device_impl.h"
@@ -106,7 +107,9 @@ bool RTCPeerConnectionFactoryImpl::Initialize() {
 #if defined(USE_INTEL_MEDIA_SDK)
         CreateIntelVideoEncoderFactory(), CreateIntelVideoDecoderFactory(),
 #else
-        webrtc::CreateBuiltinVideoEncoderFactory(),
+        std::make_unique<ExternalEncodedVideoFrameEncoderFactory>(
+            webrtc::CreateBuiltinVideoEncoderFactory(),
+            &encoded_video_frame_sender_),
         std::make_unique<EncodedVideoFrameForwardingDecoderFactory>(
             webrtc::CreateBuiltinVideoDecoderFactory(),
             &encoded_video_frame_receiver_),

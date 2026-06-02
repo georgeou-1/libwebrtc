@@ -127,6 +127,8 @@ rtc_shared_library("libwebrtc") {
     "src/rtc_dtmf_sender_impl.h",
     "src/rtc_encoded_video_frame_decoder.cc",
     "src/rtc_encoded_video_frame_decoder.h",
+    "src/rtc_encoded_video_frame_encoder.cc",
+    "src/rtc_encoded_video_frame_encoder.h",
     "src/rtc_frame_cryptor_impl.cc",
     "src/rtc_frame_cryptor_impl.h",
     "src/rtc_ice_candidate_impl.cc",

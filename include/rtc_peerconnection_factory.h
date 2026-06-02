@@ -77,6 +77,14 @@ class RTCPeerConnectionFactory : public RefCountInterface {
 
   virtual void SetEncodedVideoFrameReceiver(
       RTCEncodedVideoFrameReceiver* receiver) = 0;
+
+  virtual scoped_refptr<RTCEncodedVideoFrameSender>
+  CreateEncodedVideoFrameSender(
+      RTCEncodedVideoCodec codec,
+      uint32_t width,
+      uint32_t height,
+      uint32_t frame_rate,
+      uint32_t bitrate_bps) = 0;
 };
 
 }  // namespace libwebrtc

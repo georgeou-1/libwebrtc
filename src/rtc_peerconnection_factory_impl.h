@@ -11,6 +11,7 @@
 #include "rtc_audio_processing_impl.h"
 #include "rtc_base/thread.h"
 #include "rtc_encoded_video_frame.h"
+#include "rtc_encoded_video_frame_encoder.h"
 #include "rtc_peerconnection.h"
 #include "rtc_peerconnection_factory.h"
 #include "rtc_video_device_impl.h"
@@ -91,6 +92,19 @@ class RTCPeerConnectionFactoryImpl : public RTCPeerConnectionFactory {
     encoded_video_frame_receiver_ = receiver;
   }
 
+  scoped_refptr<RTCEncodedVideoFrameSender>
+  CreateEncodedVideoFrameSender(
+      RTCEncodedVideoCodec codec,
+      uint32_t width,
+      uint32_t height,
+      uint32_t frame_rate,
+      uint32_t bitrate_bps) override {
+    encoded_video_frame_sender_ =
+        new RefCountedObject<ExternalEncodedVideoFrameSenderImpl>(
+            codec, width, height, frame_rate, bitrate_bps);
+    return encoded_video_frame_sender_;
+  }
+
   webrtc::Thread* signaling_thread() { return signaling_thread_.get(); }
 
  protected:
@@ -130,6 +144,7 @@ class RTCPeerConnectionFactoryImpl : public RTCPeerConnectionFactory {
       audio_transport_factory_;
   webrtc::Environment env_;
   RTCEncodedVideoFrameReceiver* encoded_video_frame_receiver_ = nullptr;
+  scoped_refptr<ExternalEncodedVideoFrameSenderImpl> encoded_video_frame_sender_;
 };
 
 }  // namespace libwebrtc
