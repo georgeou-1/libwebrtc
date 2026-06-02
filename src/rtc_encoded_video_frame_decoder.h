@@ -21,7 +21,7 @@ class EncodedVideoFrameForwardingDecoderFactory final
 
   std::vector<webrtc::SdpVideoFormat> GetSupportedFormats() const override;
 
-  std::unique_ptr<webrtc::VideoDecoder> CreateVideoDecoder(
+  std::unique_ptr<webrtc::VideoDecoder> Create(
       const webrtc::SdpVideoFormat& format) override;
 
  private:

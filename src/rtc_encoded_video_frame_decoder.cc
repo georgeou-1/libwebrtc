@@ -4,6 +4,7 @@
 
 #include "api/video/encoded_image.h"
 #include "api/video_codecs/video_codec.h"
+#include "api/video_codecs/video_error_codes.h"
 
 namespace libwebrtc {
 namespace {
@@ -118,10 +119,10 @@ EncodedVideoFrameForwardingDecoderFactory::GetSupportedFormats() const {
 }
 
 std::unique_ptr<webrtc::VideoDecoder>
-EncodedVideoFrameForwardingDecoderFactory::CreateVideoDecoder(
+EncodedVideoFrameForwardingDecoderFactory::Create(
     const webrtc::SdpVideoFormat& format) {
   std::unique_ptr<webrtc::VideoDecoder> decoder =
-      inner_ ? inner_->CreateVideoDecoder(format) : nullptr;
+      inner_ ? inner_->Create(format) : nullptr;
   if (!decoder) {
     return nullptr;
   }
