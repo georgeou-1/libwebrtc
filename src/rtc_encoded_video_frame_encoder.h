@@ -15,7 +15,7 @@
 
 namespace libwebrtc {
 
-class ExternalEncodedVideoFrameSenderImpl final
+class ExternalEncodedVideoFrameSenderImpl
     : public RTCEncodedVideoFrameSender {
  public:
   ExternalEncodedVideoFrameSenderImpl(
@@ -61,8 +61,7 @@ class ExternalEncodedVideoFrameEncoderFactory final
   std::vector<webrtc::SdpVideoFormat> GetImplementations() const override;
   CodecSupport QueryCodecSupport(
       const webrtc::SdpVideoFormat& format,
-      std::optional<std::string> scalability_mode,
-      std::optional<webrtc::Resolution> resolution) const override;
+      std::optional<std::string> scalability_mode) const override;
   std::unique_ptr<webrtc::VideoEncoder> Create(
       const webrtc::Environment& env,
       const webrtc::SdpVideoFormat& format) override;

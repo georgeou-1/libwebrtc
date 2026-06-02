@@ -228,8 +228,7 @@ ExternalEncodedVideoFrameEncoderFactory::GetImplementations() const {
 webrtc::VideoEncoderFactory::CodecSupport
 ExternalEncodedVideoFrameEncoderFactory::QueryCodecSupport(
     const webrtc::SdpVideoFormat& format,
-    std::optional<std::string> scalability_mode,
-    std::optional<webrtc::Resolution> resolution) const {
+    std::optional<std::string> scalability_mode) const {
   scoped_refptr<ExternalEncodedVideoFrameSenderImpl> sender =
       sender_ ? *sender_ : nullptr;
   if (sender && sender->Matches(format)) {
@@ -238,7 +237,7 @@ ExternalEncodedVideoFrameEncoderFactory::QueryCodecSupport(
     support.is_power_efficient = true;
     return support;
   }
-  return inner_ ? inner_->QueryCodecSupport(format, scalability_mode, resolution)
+  return inner_ ? inner_->QueryCodecSupport(format, scalability_mode)
                 : CodecSupport{};
 }
 
