@@ -10,6 +10,7 @@
 #include "rtc_audio_device_impl.h"
 #include "rtc_audio_processing_impl.h"
 #include "rtc_base/thread.h"
+#include "rtc_encoded_video_frame.h"
 #include "rtc_peerconnection.h"
 #include "rtc_peerconnection_factory.h"
 #include "rtc_video_device_impl.h"
@@ -85,6 +86,11 @@ class RTCPeerConnectionFactoryImpl : public RTCPeerConnectionFactory {
   scoped_refptr<RTCRtpCapabilities> GetRtpReceiverCapabilities(
       RTCMediaType media_type) override;
 
+  void SetEncodedVideoFrameReceiver(
+      RTCEncodedVideoFrameReceiver* receiver) override {
+    encoded_video_frame_receiver_ = receiver;
+  }
+
   webrtc::Thread* signaling_thread() { return signaling_thread_.get(); }
 
  protected:
@@ -123,6 +129,7 @@ class RTCPeerConnectionFactoryImpl : public RTCPeerConnectionFactory {
   webrtc::scoped_refptr<webrtc::CustomAudioTransportFactory>
       audio_transport_factory_;
   webrtc::Environment env_;
+  RTCEncodedVideoFrameReceiver* encoded_video_frame_receiver_ = nullptr;
 };
 
 }  // namespace libwebrtc

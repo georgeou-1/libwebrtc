@@ -10,6 +10,7 @@
 #include "rtc_media_stream.h"
 #include "rtc_mediaconstraints.h"
 #include "rtc_video_device.h"
+#include "rtc_encoded_video_frame.h"
 #include "rtc_video_source.h"
 
 namespace libwebrtc {
@@ -73,6 +74,9 @@ class RTCPeerConnectionFactory : public RefCountInterface {
 
   virtual scoped_refptr<RTCRtpCapabilities> GetRtpReceiverCapabilities(
       RTCMediaType media_type) = 0;
+
+  virtual void SetEncodedVideoFrameReceiver(
+      RTCEncodedVideoFrameReceiver* receiver) = 0;
 };
 
 }  // namespace libwebrtc

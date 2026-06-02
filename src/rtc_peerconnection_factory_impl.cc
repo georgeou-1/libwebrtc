@@ -11,6 +11,7 @@
 #include "rtc_audio_source_impl.h"
 #include "rtc_media_stream_impl.h"
 #include "rtc_mediaconstraints_impl.h"
+#include "rtc_encoded_video_frame_decoder.h"
 #include "rtc_peerconnection_impl.h"
 #include "rtc_rtp_capabilities_impl.h"
 #include "rtc_video_device_impl.h"
@@ -87,7 +88,9 @@ bool RTCPeerConnectionFactoryImpl::Initialize() {
         CreateIntelVideoEncoderFactory(), CreateIntelVideoDecoderFactory(),
 #else
         webrtc::CreateBuiltinVideoEncoderFactory(),
-        webrtc::CreateBuiltinVideoDecoderFactory(),
+        std::make_unique<EncodedVideoFrameForwardingDecoderFactory>(
+            webrtc::CreateBuiltinVideoDecoderFactory(),
+            &encoded_video_frame_receiver_),
 #endif
         nullptr, audio_processing_impl_->GetAudioProcessing(), nullptr, nullptr,
         audio_transport_factory_);
