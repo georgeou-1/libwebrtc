@@ -7,7 +7,6 @@
 #include <utility>
 
 #include "api/video/encoded_image.h"
-#include "api/video_codecs/video_codec.h"
 #include "modules/video_coding/include/video_error_codes.h"
 #include "rtc_base/time_utils.h"
 
@@ -29,24 +28,6 @@ const char* CodecSdpName(RTCEncodedVideoCodec codec) {
     case RTCEncodedVideoCodec::kUnknown:
     default:
       return "";
-  }
-}
-
-webrtc::VideoCodecType WebRtcCodecType(RTCEncodedVideoCodec codec) {
-  switch (codec) {
-    case RTCEncodedVideoCodec::kAV1:
-      return webrtc::kVideoCodecAV1;
-    case RTCEncodedVideoCodec::kVP8:
-      return webrtc::kVideoCodecVP8;
-    case RTCEncodedVideoCodec::kVP9:
-      return webrtc::kVideoCodecVP9;
-    case RTCEncodedVideoCodec::kH264:
-      return webrtc::kVideoCodecH264;
-    case RTCEncodedVideoCodec::kH265:
-      return webrtc::kVideoCodecH265;
-    case RTCEncodedVideoCodec::kUnknown:
-    default:
-      return webrtc::kVideoCodecGeneric;
   }
 }
 
@@ -110,7 +91,6 @@ class ExternalEncodedVideoFrameEncoder final : public webrtc::VideoEncoder {
     info.is_hardware_accelerated = true;
     info.has_trusted_rate_controller = true;
     info.supports_native_handle = true;
-    info.enable_cpu_overuse_detection = false;
     info.scaling_settings = ScalingSettings::kOff;
     return info;
   }
@@ -162,18 +142,13 @@ bool ExternalEncodedVideoFrameSenderImpl::SubmitEncodedVideoFrame(
   image.SetFrameType(frame.key_frame
                          ? webrtc::VideoFrameType::kVideoFrameKey
                          : webrtc::VideoFrameType::kVideoFrameDelta);
-  image.set_end_of_temporal_unit(true);
   image.SetRetransmissionAllowed(true);
   if (frame.tracking_frame_id) {
     image.SetVideoFrameTrackingId(frame.tracking_frame_id);
   }
 
-  webrtc::CodecSpecificInfo codec_info{};
-  codec_info.codecType = WebRtcCodecType(codec_);
-  codec_info.end_of_picture = true;
-
   wants_key_frame_ = false;
-  return callback_->OnEncodedImage(image, &codec_info).error ==
+  return callback_->OnEncodedImage(image, nullptr).error ==
          webrtc::EncodedImageCallback::Result::OK;
 }
 
