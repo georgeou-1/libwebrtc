@@ -4,6 +4,7 @@
 #include <memory>
 #include <mutex>
 #include <optional>
+#include <cstdint>
 #include <vector>
 
 #include "api/environment/environment.h"
@@ -33,6 +34,7 @@ class ExternalEncodedVideoFrameSenderImpl
   void ClearEncoderCallback(webrtc::EncodedImageCallback* callback);
   void RequestKeyFrame();
 
+  uint64_t debug_id() const { return debug_id_; }
   RTCEncodedVideoCodec codec() const { return codec_; }
   uint32_t width() const { return width_; }
   uint32_t height() const { return height_; }
@@ -41,6 +43,7 @@ class ExternalEncodedVideoFrameSenderImpl
 
  private:
   RTCEncodedVideoCodec codec_ = RTCEncodedVideoCodec::kUnknown;
+  uint64_t debug_id_ = 0;
   uint32_t width_ = 0;
   uint32_t height_ = 0;
   uint32_t frame_rate_ = 30;
